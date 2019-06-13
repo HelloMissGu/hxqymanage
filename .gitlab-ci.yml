@@ -1,0 +1,72 @@
+variables:
+  IMAGE_TAG: $SYA_REGISTRY/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+  CONTAINER_NAME: $CI_PROJECT_NAME
+
+before_script:
+  - docker login
+    --username $SYA_REGISTRY_USERNAME
+    --password $SYA_REGISTRY_PASSWORD
+    $SYA_REGISTRY
+
+build-demo:
+  stage: build
+  only:
+    - develop
+    - bugfix
+  script:
+    - docker image build
+      --tag $IMAGE_TAG
+      --build-arg REACT_APP_API=https://api.demo.huaxiaqy.com
+      .
+    - docker image push $IMAGE_TAG
+
+deploy-demo:
+  stage: deploy
+  only:
+    - develop
+    - bugfix
+  variables:
+    DOCKER_HOST: $DEMO_SERVER
+  script:
+    - docker image pull $IMAGE_TAG
+    - docker container stop $CONTAINER_NAME || true
+    - docker container rm $CONTAINER_NAME || true
+    - docker container run --detach
+      --name $CONTAINER_NAME
+      --publish 127.0.0.1:8010:80
+      $IMAGE_TAG
+
+build-prod:
+  stage: build
+  only:
+    - master
+  script:
+    - docker image build
+      --tag $IMAGE_TAG
+      --build-arg REACT_APP_API=https://api.huaxiaqy.com
+      .
+    - docker image push $IMAGE_TAG
+
+deploy-prod:
+  stage: deploy
+  only:
+    - master
+  variables:
+    DOCKER_HOST: $PROD_SERVER
+  script:
+    - docker image pull $IMAGE_TAG
+    - docker container stop $CONTAINER_NAME-1 || true
+    - docker container rm $CONTAINER_NAME-1 || true
+    - docker container run --detach
+      --restart always
+      --name $CONTAINER_NAME-1
+      --publish 127.0.0.1:8010:80
+      $IMAGE_TAG
+
+    - docker container stop $CONTAINER_NAME-2 || true
+    - docker container rm $CONTAINER_NAME-2 || true
+    - docker container run --detach
+      --restart always
+      --name $CONTAINER_NAME-2
+      --publish 127.0.0.1:8011:80
+      $IMAGE_TAG

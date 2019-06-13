@@ -1,0 +1,25 @@
+.templateCard {
+  border: none;
+  margin-bottom: 20px;
+}
+.templateCard > div {
+  padding: 2px;
+  border: none;
+}
+.templateCard .ant-card-head {
+  padding: 0;
+}
+.templateCard .ant-card-body {
+  padding: 0;
+}
+.templateCard .ant-card-head-title {
+  padding: 0;
+}
+.templateCard .ant-card-extra {
+  position: absolute;
+  padding: 0;
+  left: 110%;
+}
+.ant-checkbox-group .ant-checkbox-group-item {
+  display: block;
+}

@@ -1,0 +1,12 @@
+.preview .ant-upload-drag-container {
+  height: 0;
+  position: relative;
+  padding-top: calc(160 / 344 * 100%);
+}
+.preview .ant-upload-drag-container > img{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
